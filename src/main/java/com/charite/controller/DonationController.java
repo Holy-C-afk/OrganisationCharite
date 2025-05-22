@@ -1,39 +1,50 @@
 package com.charite.controller;
 
+import com.charite.model.Donation;
+import com.charite.model.User;
+import com.charite.service.DonationService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.Authentication;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.math.BigDecimal;
 
 @Controller
+@RequestMapping("/donations")
 public class DonationController {
-    private static final Logger logger = LoggerFactory.getLogger(DonationController.class);
 
-    @GetMapping("/donations")
-    public ModelAndView donations() {
-        logger.debug("Accessing donations page");
+    @Autowired
+    private DonationService donationService;
+
+    @GetMapping
+    public String getDonationsPage(@AuthenticationPrincipal User user, Model model) {
+        model.addAttribute("donations", donationService.getUserDonations(user));
+        model.addAttribute("totalAmount", donationService.getTotalDonationsAmount(user));
+        return "donations";
+    }
+
+    @PostMapping("/create")
+    public String createDonation(@RequestParam("amount") String amountStr,
+                               @RequestParam("category") String categoryStr,
+                               @RequestParam(value = "message", required = false) String message,
+                               @AuthenticationPrincipal User user,
+                               RedirectAttributes redirectAttributes) {
         try {
-            ModelAndView mav = new ModelAndView("donations");
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            BigDecimal amount = new BigDecimal(amountStr);
+            Donation.DonationCategory category = Donation.DonationCategory.valueOf(categoryStr);
             
-            if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
-                String username = auth.getName();
-                logger.debug("User authenticated: {}", username);
-                mav.addObject("username", username);
-            } else {
-                logger.debug("User not authenticated, setting as Guest");
-                mav.addObject("username", "Guest");
-            }
-            
-            logger.debug("Returning donations template");
-            return mav;
+            donationService.createDonation(amount, category, message, user);
+            redirectAttributes.addFlashAttribute("success", "Donation created successfully!");
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute("error", "Invalid amount format");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", "Invalid category");
         } catch (Exception e) {
-            logger.error("Error in donations controller", e);
-            throw e;
+            redirectAttributes.addFlashAttribute("error", "Failed to create donation: " + e.getMessage());
         }
+        return "redirect:/donations";
     }
 } 

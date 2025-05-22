@@ -1,13 +1,21 @@
 package com.charite.service;
 
 import com.charite.model.CharityAction;
+import com.charite.model.User;
 import com.charite.repository.CharityActionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class CharityActionService {
@@ -15,55 +23,65 @@ public class CharityActionService {
     @Autowired
     private CharityActionRepository charityActionRepository;
 
-    public List<CharityAction> getAllCharityActions() {
-        return charityActionRepository.findAll();
+    private final Path uploadDir = Paths.get("uploads/charity-actions");
+
+    public CharityActionService() {
+        try {
+            Files.createDirectories(uploadDir);
+        } catch (IOException e) {
+            throw new RuntimeException("Could not create upload directory!", e);
+        }
     }
 
-    public Optional<CharityAction> getCharityActionById(String id) {
-        return charityActionRepository.findById(id);
+    @Transactional
+    public CharityAction createAction(String title, String description, CharityAction.ActionCategory category,
+                                    String location, LocalDate date, MultipartFile image, User organizer) throws IOException {
+        CharityAction action = new CharityAction();
+        action.setTitle(title);
+        action.setDescription(description);
+        action.setCategory(category);
+        action.setLocation(location);
+        action.setDate(date);
+        action.setOrganizer(organizer);
+        action.setCreatedAt(LocalDateTime.now());
+
+        // Set initial status based on date
+        if (date.isBefore(LocalDate.now())) {
+            action.setStatus(CharityAction.ActionStatus.COMPLETED);
+        } else if (date.equals(LocalDate.now())) {
+            action.setStatus(CharityAction.ActionStatus.ACTIVE);
+        } else {
+            action.setStatus(CharityAction.ActionStatus.UPCOMING);
+        }
+
+        // Handle image upload
+        if (image != null && !image.isEmpty()) {
+            String fileName = UUID.randomUUID().toString() + "_" + image.getOriginalFilename();
+            Path filePath = uploadDir.resolve(fileName);
+            Files.copy(image.getInputStream(), filePath);
+            action.setImageUrl("/uploads/charity-actions/" + fileName);
+        }
+
+        return charityActionRepository.save(action);
     }
 
-    public List<CharityAction> getCharityActionsByOrganization(String organizationId) {
-        return charityActionRepository.findByOrganizationId(organizationId);
+    public List<CharityAction> getOrganizerActions(User organizer) {
+        return charityActionRepository.findByOrganizerId(organizer.getId());
     }
 
-    public List<CharityAction> getCharityActionsByStatus(String status) {
-        return charityActionRepository.findByStatus(status);
-    }
-
-    public List<CharityAction> getCharityActionsByCategory(String category) {
+    public List<CharityAction> getActionsByCategory(CharityAction.ActionCategory category) {
         return charityActionRepository.findByCategory(category);
     }
 
-    public CharityAction createCharityAction(CharityAction charityAction) {
-        charityAction.setCreatedAt(LocalDateTime.now());
-        charityAction.setUpdatedAt(LocalDateTime.now());
-        return charityActionRepository.save(charityAction);
+    public List<CharityAction> getActionsByStatus(CharityAction.ActionStatus status) {
+        return charityActionRepository.findByStatus(status);
     }
 
-    public Optional<CharityAction> updateCharityAction(String id, CharityAction charityAction) {
-        return charityActionRepository.findById(id)
-                .map(existingAction -> {
-                    existingAction.setTitle(charityAction.getTitle());
-                    existingAction.setDescription(charityAction.getDescription());
-                    existingAction.setCategory(charityAction.getCategory());
-                    existingAction.setLocation(charityAction.getLocation());
-                    existingAction.setStartDate(charityAction.getStartDate());
-                    existingAction.setEndDate(charityAction.getEndDate());
-                    existingAction.setTargetAmount(charityAction.getTargetAmount());
-                    existingAction.setStatus(charityAction.getStatus());
-                    existingAction.setImageUrl(charityAction.getImageUrl());
-                    existingAction.setVideoUrl(charityAction.getVideoUrl());
-                    existingAction.setUpdatedAt(LocalDateTime.now());
-                    return charityActionRepository.save(existingAction);
-                });
-    }
-
-    public boolean deleteCharityAction(String id) {
-        if (charityActionRepository.existsById(id)) {
-            charityActionRepository.deleteById(id);
-            return true;
-        }
-        return false;
+    @Transactional
+    public void updateActionStatus(Long actionId, CharityAction.ActionStatus newStatus) {
+        charityActionRepository.findById(actionId).ifPresent(action -> {
+            action.setStatus(newStatus);
+            charityActionRepository.save(action);
+        });
     }
 } 

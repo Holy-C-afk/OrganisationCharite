@@ -20,59 +20,93 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--light-bg);
             color: var(--text-color);
+            padding-top: 70px; /* Pour compenser la navbar fixe */
         }
 
         .navbar {
-            background-color: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background-color: var(--primary-color) !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
         }
 
         .navbar-brand {
-            color: var(--primary-color) !important;
-            font-weight: bold;
+            color: white !important;
+            font-weight: 600;
             font-size: 1.5rem;
         }
 
         .nav-link {
-            color: var(--text-color) !important;
+            color: rgba(255, 255, 255, 0.9) !important;
             font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem !important;
+            border-radius: 8px;
         }
 
         .nav-link:hover {
-            color: var(--primary-color) !important;
+            color: white !important;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-outline-danger {
+            color: white;
+            border-color: white;
+            background: transparent;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-danger:hover {
+            background: white;
+            color: var(--primary-color);
         }
 
         .hero-section {
-            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1593113598332-cd288d649433?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background: linear-gradient(rgba(46, 125, 50, 0.9), rgba(46, 125, 50, 0.8)), url('https://images.unsplash.com/photo-1593113598332-cd288d649433?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
             background-size: cover;
             background-position: center;
             color: white;
-            padding: 60px 0;
+            padding: 80px 0;
             text-align: center;
             margin-bottom: 40px;
+            border-radius: 0 0 20px 20px;
         }
 
         .donation-card {
             border: none;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .donation-card:hover {
+            transform: translateY(-5px);
         }
 
         .donation-card .card-header {
             background-color: var(--primary-color);
             color: white;
-            border-radius: 10px 10px 0 0 !important;
+            border-radius: 15px 15px 0 0 !important;
+            padding: 1rem;
         }
 
         .btn-primary {
             background-color: var(--primary-color);
             border-color: var(--primary-color);
+            padding: 0.8rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
         }
 
         .btn-primary:hover {
             background-color: var(--secondary-color);
             border-color: var(--secondary-color);
+            transform: translateY(-2px);
         }
 
         .donation-amount {
@@ -85,32 +119,64 @@
             color: #666;
             font-size: 0.9rem;
         }
+
+        .username-display {
+            color: white;
+            font-weight: 500;
+            margin-right: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding-top: 60px;
+            }
+            
+            .navbar {
+                padding: 0.5rem 0;
+            }
+
+            .hero-section {
+                padding: 60px 0;
+            }
+        }
     </style>
 </head>
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+    <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
-            <a class="navbar-brand" href="/">Charité</a>
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-heart me-2"></i>Charité
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                        <a class="nav-link" th:href="@{/dashboard}">
+                            <i class="fas fa-home me-2"></i>Dashboard
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="/donations">Donations</a>
+                        <a class="nav-link active" th:href="@{/donations}">
+                            <i class="fas fa-hand-holding-heart me-2"></i>Donations
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/charity-actions">Charity Actions</a>
+                        <a class="nav-link" th:href="@{/charity-actions}">
+                            <i class="fas fa-hands-helping me-2"></i>Actions Caritatives
+                        </a>
                     </li>
                 </ul>
                 <div class="d-flex align-items-center">
-                    <span class="me-3" th:text="${username}">User</span>
+                    <span class="username-display" th:text="${username}">
+                        <i class="fas fa-user me-2"></i>Utilisateur
+                    </span>
                     <form th:action="@{/logout}" method="post" class="d-inline">
-                        <button class="btn btn-outline-danger" type="submit">Sign out</button>
+                        <button class="btn btn-outline-danger" type="submit">
+                            <i class="fas fa-sign-out-alt me-2"></i>Déconnexion
+                        </button>
                     </form>
                 </div>
             </div>
@@ -120,8 +186,8 @@
     <!-- Hero Section -->
     <section class="hero-section">
         <div class="container">
-            <h1>Your Donations</h1>
-            <p class="lead">Track your charitable contributions and their impact</p>
+            <h1>Vos Donations</h1>
+            <p class="lead">Suivez vos contributions caritatives et leur impact</p>
         </div>
     </section>
 
@@ -130,21 +196,21 @@
         <div class="row">
             <!-- Donation History -->
             <div class="col-md-8">
-                <h2 class="mb-4">Donation History</h2>
+                <h2 class="mb-4">Historique des Donations</h2>
                 
                 <!-- Donation Card 1 -->
                 <div class="card donation-card">
                     <div class="card-header">
-                        Emergency Relief Fund
+                        Fonds d'Urgence
                     </div>
                     <div class="card-body">
                         <div class="row align-items-center">
                             <div class="col-md-6">
-                                <div class="donation-amount">$500</div>
-                                <div class="donation-date">May 15, 2025</div>
+                                <div class="donation-amount">500 €</div>
+                                <div class="donation-date">15 Mai 2025</div>
                             </div>
                             <div class="col-md-6 text-end">
-                                <span class="badge bg-success">Completed</span>
+                                <span class="badge bg-success">Complété</span>
                             </div>
                         </div>
                     </div>
@@ -153,16 +219,16 @@
                 <!-- Donation Card 2 -->
                 <div class="card donation-card">
                     <div class="card-header">
-                        Education Support
+                        Soutien à l'Éducation
                     </div>
                     <div class="card-body">
                         <div class="row align-items-center">
                             <div class="col-md-6">
-                                <div class="donation-amount">$250</div>
-                                <div class="donation-date">April 28, 2025</div>
+                                <div class="donation-amount">250 €</div>
+                                <div class="donation-date">28 Avril 2025</div>
                             </div>
                             <div class="col-md-6 text-end">
-                                <span class="badge bg-success">Completed</span>
+                                <span class="badge bg-success">Complété</span>
                             </div>
                         </div>
                     </div>
@@ -171,16 +237,16 @@
                 <!-- Donation Card 3 -->
                 <div class="card donation-card">
                     <div class="card-header">
-                        Food Security
+                        Sécurité Alimentaire
                     </div>
                     <div class="card-body">
                         <div class="row align-items-center">
                             <div class="col-md-6">
-                                <div class="donation-amount">$100</div>
-                                <div class="donation-date">April 10, 2025</div>
+                                <div class="donation-amount">100 €</div>
+                                <div class="donation-date">10 Avril 2025</div>
                             </div>
                             <div class="col-md-6 text-end">
-                                <span class="badge bg-success">Completed</span>
+                                <span class="badge bg-success">Complété</span>
                             </div>
                         </div>
                     </div>
@@ -191,21 +257,61 @@
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-body">
-                        <h3 class="card-title">Donation Summary</h3>
+                        <h3 class="card-title">Résumé des Donations</h3>
                         <div class="mb-4">
-                            <h4 class="donation-amount">$850</h4>
-                            <p class="text-muted">Total Donations</p>
+                            <h4 class="donation-amount">850 €</h4>
+                            <p class="text-muted">Total des Donations</p>
                         </div>
                         <div class="mb-4">
-                            <h5>Recent Impact</h5>
+                            <h5>Impact Récent</h5>
                             <ul class="list-unstyled">
-                                <li>✓ 5 families supported</li>
-                                <li>✓ 3 children's education funded</li>
-                                <li>✓ 10 food packages delivered</li>
+                                <li>✓ 5 familles soutenues</li>
+                                <li>✓ 3 enfants scolarisés</li>
+                                <li>✓ 10 colis alimentaires distribués</li>
                             </ul>
                         </div>
-                        <a href="/dashboard" class="btn btn-primary w-100">Make New Donation</a>
+                        <button type="button" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#donationModal">
+                            Faire une Nouvelle Donation
+                        </button>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Donation Modal -->
+    <div class="modal fade" id="donationModal" tabindex="-1" aria-labelledby="donationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="donationModalLabel">Faire une Donation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form th:action="@{/donations/create}" method="post">
+                        <div class="mb-3">
+                            <label for="amount" class="form-label">Montant de la Donation (€)</label>
+                            <input type="text" class="form-control" id="amount" name="amount" pattern="[0-9]*[.,]?[0-9]+" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="category" class="form-label">Catégorie</label>
+                            <select class="form-select" id="category" name="category" required>
+                                <option value="">Sélectionnez une catégorie</option>
+                                <option value="EMERGENCY">Urgence</option>
+                                <option value="EDUCATION">Éducation</option>
+                                <option value="FOOD">Sécurité Alimentaire</option>
+                                <option value="MEDICAL">Support Médical</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="message" class="form-label">Message (Optionnel)</label>
+                            <textarea class="form-control" id="message" name="message" rows="3"></textarea>
+                        </div>
+                        <div class="text-end">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                            <button type="submit" class="btn btn-primary">Donner Maintenant</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
