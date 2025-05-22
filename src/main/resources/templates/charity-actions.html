@@ -196,55 +196,93 @@
             <!-- Active Actions -->
             <div class="col-md-8">
                 <h2 class="mb-4">Actions Actives</h2>
-                
-                <!-- Action Card 1 -->
-                <div class="card action-card">
-                    <div class="card-header">
-                        Distribution Alimentaire
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-8">
-                                <h5 class="card-title">Distribution de Colis Alimentaires</h5>
-                                <p class="card-text">Distribution de colis alimentaires aux familles dans le besoin.</p>
-                                <div class="action-location">
-                                    <i class="fas fa-map-marker-alt me-2"></i>Paris, 75001
+                <!-- Display real charity actions (ACTIVE) -->
+                <div th:if="${activeActions != null and #lists.isEmpty(activeActions)}" class="alert alert-info">
+                    Aucune action active trouvée.
+                </div>
+                <div th:if="${activeActions != null and !#lists.isEmpty(activeActions)}">
+                    <div th:each="action : ${activeActions}" class="card action-card mb-3">
+                        <div class="card-header">
+                            <span th:text="${action.category}">Catégorie</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h5 class="card-title" th:text="${action.title}">Titre</h5>
+                                    <p class="card-text" th:text="${action.description}">Description</p>
+                                    <div class="action-location">
+                                        <i class="fas fa-map-marker-alt me-2"></i><span th:text="${action.location}">Lieu</span>
+                                    </div>
+                                    <div class="action-date mt-2">
+                                        <i class="far fa-calendar-alt me-2"></i><span th:text="${#temporals.format(action.date, 'dd MMM yyyy')}">Date</span>
+                                    </div>
                                 </div>
-                                <div class="action-date mt-2">
-                                    <i class="far fa-calendar-alt me-2"></i>25 Mai 2025
-                                </div>
-                            </div>
-                            <div class="col-md-4 text-end">
-                                <span class="badge bg-success">Active</span>
-                                <div class="mt-2">
-                                    <button class="btn btn-primary btn-sm">Participer</button>
+                                <div class="col-md-4 text-end">
+                                    <span class="badge bg-success">Active</span>
+                                    <div class="mt-2">
+                                        <button class="btn btn-primary btn-sm">Participer</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Action Card 2 -->
-                <div class="card action-card">
-                    <div class="card-header">
-                        Soutien Scolaire
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-8">
-                                <h5 class="card-title">Soutien Scolaire Bénévole</h5>
-                                <p class="card-text">Aide aux devoirs pour les enfants défavorisés.</p>
-                                <div class="action-location">
-                                    <i class="fas fa-map-marker-alt me-2"></i>Lyon, 69001
+                <h2 class="mb-4 mt-5">Actions à Venir</h2>
+                <div th:if="${upcomingActions != null and #lists.isEmpty(upcomingActions)}" class="alert alert-info">
+                    Aucune action à venir trouvée.
+                </div>
+                <div th:if="${upcomingActions != null and !#lists.isEmpty(upcomingActions)}">
+                    <div th:each="action : ${upcomingActions}" class="card action-card mb-3">
+                        <div class="card-header">
+                            <span th:text="${action.category}">Catégorie</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h5 class="card-title" th:text="${action.title}">Titre</h5>
+                                    <p class="card-text" th:text="${action.description}">Description</p>
+                                    <div class="action-location">
+                                        <i class="fas fa-map-marker-alt me-2"></i><span th:text="${action.location}">Lieu</span>
+                                    </div>
+                                    <div class="action-date mt-2">
+                                        <i class="far fa-calendar-alt me-2"></i><span th:text="${#temporals.format(action.date, 'dd MMM yyyy')}">Date</span>
+                                    </div>
                                 </div>
-                                <div class="action-date mt-2">
-                                    <i class="far fa-calendar-alt me-2"></i>28 Mai 2025
+                                <div class="col-md-4 text-end">
+                                    <span class="badge bg-warning text-dark">À venir</span>
+                                    <div class="mt-2">
+                                        <button class="btn btn-primary btn-sm">Participer</button>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-4 text-end">
-                                <span class="badge bg-success">Active</span>
-                                <div class="mt-2">
-                                    <button class="btn btn-primary btn-sm">Participer</button>
+                        </div>
+                    </div>
+                </div>
+
+                <h2 class="mb-4 mt-5">Actions Terminées</h2>
+                <div th:if="${completedActions != null and #lists.isEmpty(completedActions)}" class="alert alert-info">
+                    Aucune action terminée trouvée.
+                </div>
+                <div th:if="${completedActions != null and !#lists.isEmpty(completedActions)}">
+                    <div th:each="action : ${completedActions}" class="card action-card mb-3">
+                        <div class="card-header">
+                            <span th:text="${action.category}">Catégorie</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h5 class="card-title" th:text="${action.title}">Titre</h5>
+                                    <p class="card-text" th:text="${action.description}">Description</p>
+                                    <div class="action-location">
+                                        <i class="fas fa-map-marker-alt me-2"></i><span th:text="${action.location}">Lieu</span>
+                                    </div>
+                                    <div class="action-date mt-2">
+                                        <i class="far fa-calendar-alt me-2"></i><span th:text="${#temporals.format(action.date, 'dd MMM yyyy')}">Date</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <span class="badge bg-secondary">Terminée</span>
                                 </div>
                             </div>
                         </div>
