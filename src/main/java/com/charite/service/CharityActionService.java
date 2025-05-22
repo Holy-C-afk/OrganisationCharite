@@ -23,7 +23,7 @@ public class CharityActionService {
     @Autowired
     private CharityActionRepository charityActionRepository;
 
-    private final Path uploadDir = Paths.get("uploads/charity-actions");
+    private final Path uploadDir = Paths.get(System.getProperty("java.io.tmpdir"), "charity-actions");
 
     public CharityActionService() {
         try {

@@ -36,7 +36,6 @@ public class SecurityConfig {
                     .requestMatchers("/", "/home", "/register", "/login", "/css/**", "/js/**", "/images/**", "/h2-console/**", "/api/public/**", "/error").permitAll()
                     .requestMatchers("/admin/**").hasRole("SUPER_ADMIN")
                     .requestMatchers("/organization/**").hasAnyRole("ORGANIZATION_ADMIN", "SUPER_ADMIN")
-                    .requestMatchers("/dashboard", "/donations", "/charity-actions", "/profile").authenticated()
                     .anyRequest().authenticated();
             })
             .formLogin(form -> {

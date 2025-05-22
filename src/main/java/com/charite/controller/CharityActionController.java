@@ -3,6 +3,7 @@ package com.charite.controller;
 import com.charite.model.CharityAction;
 import com.charite.model.User;
 import com.charite.service.CharityActionService;
+import com.charite.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -20,8 +21,18 @@ public class CharityActionController {
     @Autowired
     private CharityActionService charityActionService;
 
+    @Autowired
+    private UserService userService;
+
     @GetMapping
-    public String getCharityActionsPage(@AuthenticationPrincipal User user, Model model) {
+    public String getCharityActionsPage(@AuthenticationPrincipal org.springframework.security.core.userdetails.User principal, Model model) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+        User user = userService.getUserByEmail(principal.getUsername()).orElse(null);
+        if (user == null) {
+            return "redirect:/login";
+        }
         model.addAttribute("activeActions", charityActionService.getActionsByStatus(CharityAction.ActionStatus.ACTIVE));
         model.addAttribute("upcomingActions", charityActionService.getActionsByStatus(CharityAction.ActionStatus.UPCOMING));
         model.addAttribute("completedActions", charityActionService.getActionsByStatus(CharityAction.ActionStatus.COMPLETED));
@@ -36,13 +47,22 @@ public class CharityActionController {
                              @RequestParam String location,
                              @RequestParam LocalDate date,
                              @RequestParam(required = false) MultipartFile image,
-                             @AuthenticationPrincipal User user,
+                             @AuthenticationPrincipal org.springframework.security.core.userdetails.User principal,
                              RedirectAttributes redirectAttributes) {
+        if (principal == null) {
+            redirectAttributes.addFlashAttribute("error", "Vous devez être connecté pour créer une action.");
+            return "redirect:/login";
+        }
+        User user = userService.getUserByEmail(principal.getUsername()).orElse(null);
+        if (user == null) {
+            redirectAttributes.addFlashAttribute("error", "Utilisateur introuvable.");
+            return "redirect:/login";
+        }
         try {
             charityActionService.createAction(title, description, category, location, date, image, user);
-            redirectAttributes.addFlashAttribute("success", "Charity action created successfully!");
+            redirectAttributes.addFlashAttribute("success", "Action caritative créée avec succès !");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Failed to create charity action: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "Échec de la création de l'action caritative : " + e.getMessage());
         }
         return "redirect:/charity-actions";
     }

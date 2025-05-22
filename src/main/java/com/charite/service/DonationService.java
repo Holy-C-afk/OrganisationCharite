@@ -34,7 +34,7 @@ public class DonationService {
         return donationRepository.findByCharityActionId(charityActionId);
     }
 
-    public List<Donation> getDonationsByStatus(String status) {
+    public List<Donation> getDonationsByStatus(Donation.Status status) {
         return donationRepository.findByStatus(status);
     }
 

@@ -26,7 +26,7 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public Optional<User> getUserById(String id) {
+    public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
     }
 
@@ -47,7 +47,7 @@ public class UserService {
         return savedUser;
     }
 
-    public Optional<User> updateUser(String id, User user) {
+    public Optional<User> updateUser(Long id, User user) {
         logger.info("Updating user with ID: {}", id);
         return userRepository.findById(id)
                 .map(existingUser -> {
@@ -65,7 +65,7 @@ public class UserService {
                 });
     }
 
-    public boolean deleteUser(String id) {
+    public boolean deleteUser(Long id) {
         logger.info("Deleting user with ID: {}", id);
         if (userRepository.existsById(id)) {
             userRepository.deleteById(id);
