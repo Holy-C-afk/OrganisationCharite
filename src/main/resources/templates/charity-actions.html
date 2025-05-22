@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Charité - Charity Actions</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2E7D32;
+            --secondary-color: #1B5E20;
+            --accent-color: #4CAF50;
+            --text-color: #333;
+            --light-bg: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text-color);
+        }
+
+        .navbar {
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            color: var(--primary-color) !important;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .nav-link {
+            color: var(--text-color) !important;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color) !important;
+        }
+
+        .hero-section {
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1593113598332-cd288d649433?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .action-card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .action-card img {
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+
+        .action-status {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            color: white;
+            font-size: 0.8rem;
+        }
+
+        .status-active {
+            background-color: var(--primary-color);
+        }
+
+        .status-upcoming {
+            background-color: #FFA000;
+        }
+
+        .status-completed {
+            background-color: #757575;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">Charité</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/donations">Donations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/charity-actions">Charity Actions</a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <span class="me-3" th:text="${username}">User</span>
+                    <form th:action="@{/logout}" method="post" class="d-inline">
+                        <button class="btn btn-outline-danger" type="submit">Sign out</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1>Charity Actions</h1>
+            <p class="lead">Get involved in meaningful charitable activities</p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="row">
+            <!-- Active Actions -->
+            <div class="col-md-8">
+                <h2 class="mb-4">Active Actions</h2>
+                
+                <!-- Action Card 1 -->
+                <div class="card action-card">
+                    <div class="action-status status-active">Active</div>
+                    <img src="https://images.unsplash.com/photo-1593113598332-cd288d649433?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" class="card-img-top" alt="Action">
+                    <div class="card-body">
+                        <h5 class="card-title">Food Distribution Drive</h5>
+                        <p class="card-text">Help distribute food packages to underprivileged families in the community.</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <small class="text-muted">Location: Community Center</small><br>
+                                <small class="text-muted">Date: May 25, 2025</small>
+                            </div>
+                            <a href="#" class="btn btn-primary">Join Now</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Card 2 -->
+                <div class="card action-card">
+                    <div class="action-status status-upcoming">Upcoming</div>
+                    <img src="https://images.unsplash.com/photo-1593113598332-cd288d649433?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" class="card-img-top" alt="Action">
+                    <div class="card-body">
+                        <h5 class="card-title">Education Support Program</h5>
+                        <p class="card-text">Volunteer to teach and mentor children from underprivileged backgrounds.</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <small class="text-muted">Location: Local School</small><br>
+                                <small class="text-muted">Date: June 1, 2025</small>
+                            </div>
+                            <a href="#" class="btn btn-primary">Register</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Card 3 -->
+                <div class="card action-card">
+                    <div class="action-status status-completed">Completed</div>
+                    <img src="https://images.unsplash.com/photo-1593113598332-cd288d649433?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" class="card-img-top" alt="Action">
+                    <div class="card-body">
+                        <h5 class="card-title">Medical Camp</h5>
+                        <p class="card-text">Free medical checkup and medicine distribution for the needy.</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <small class="text-muted">Location: Health Center</small><br>
+                                <small class="text-muted">Date: May 15, 2025</small>
+                            </div>
+                            <a href="#" class="btn btn-primary">View Report</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Summary -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title">Your Participation</h3>
+                        <div class="mb-4">
+                            <h4 class="text-primary">3 Actions</h4>
+                            <p class="text-muted">Total Participated</p>
+                        </div>
+                        <div class="mb-4">
+                            <h5>Impact Created</h5>
+                            <ul class="list-unstyled">
+                                <li>✓ 50 families supported</li>
+                                <li>✓ 30 children educated</li>
+                                <li>✓ 100 medical checkups</li>
+                            </ul>
+                        </div>
+                        <a href="#" class="btn btn-primary w-100">Create New Action</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 
