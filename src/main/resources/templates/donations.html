@@ -198,55 +198,27 @@
             <div class="col-md-8">
                 <h2 class="mb-4">Historique des Donations</h2>
                 
-                <!-- Donation Card 1 -->
-                <div class="card donation-card">
-                    <div class="card-header">
-                        Fonds d'Urgence
-                    </div>
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col-md-6">
-                                <div class="donation-amount">500 €</div>
-                                <div class="donation-date">15 Mai 2025</div>
-                            </div>
-                            <div class="col-md-6 text-end">
-                                <span class="badge bg-success">Complété</span>
-                            </div>
-                        </div>
-                    </div>
+                <!-- Display real donations -->
+                <div th:if="${donations != null and #lists.isEmpty(donations)}" class="alert alert-info">
+                    Aucune donation trouvée.
                 </div>
-
-                <!-- Donation Card 2 -->
-                <div class="card donation-card">
-                    <div class="card-header">
-                        Soutien à l'Éducation
-                    </div>
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col-md-6">
-                                <div class="donation-amount">250 €</div>
-                                <div class="donation-date">28 Avril 2025</div>
-                            </div>
-                            <div class="col-md-6 text-end">
-                                <span class="badge bg-success">Complété</span>
-                            </div>
+                <div th:if="${donations != null and !#lists.isEmpty(donations)}">
+                    <div th:each="donation : ${donations}" class="card donation-card mb-3">
+                        <div class="card-header">
+                            <span th:text="${donation.category}">Catégorie</span>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Donation Card 3 -->
-                <div class="card donation-card">
-                    <div class="card-header">
-                        Sécurité Alimentaire
-                    </div>
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col-md-6">
-                                <div class="donation-amount">100 €</div>
-                                <div class="donation-date">10 Avril 2025</div>
-                            </div>
-                            <div class="col-md-6 text-end">
-                                <span class="badge bg-success">Complété</span>
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <div class="donation-amount" th:text="${donation.amount + ' €'}">Montant</div>
+                                    <div class="donation-date" th:text="${#temporals.format(donation.createdAt, 'dd MMM yyyy')}">Date</div>
+                                    <div th:if="${donation.message}" class="mt-2"><strong>Message:</strong> <span th:text="${donation.message}"></span></div>
+                                </div>
+                                <div class="col-md-6 text-end">
+                                    <span class="badge bg-success" th:if="${donation.status == 'COMPLETED'}">Complété</span>
+                                    <span class="badge bg-warning text-dark" th:if="${donation.status == 'PENDING'}">En attente</span>
+                                    <span class="badge bg-danger" th:if="${donation.status == 'CANCELLED'}">Annulé</span>
+                                </div>
                             </div>
                         </div>
                     </div>
