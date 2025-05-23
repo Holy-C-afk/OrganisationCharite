@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Panneau d'administration</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-success">
+    <div class="container">
+        <a class="navbar-brand" href="/">Charité</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" th:href="@{/dashboard}">Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/donations}">Donations</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/charity-actions}">Actions Caritatives</a></li>
+                <li class="nav-item"><a class="nav-link active" th:href="@{/admin}">Admin Panel</a></li>
+            </ul>
+            <form th:action="@{/logout}" method="post" class="d-inline">
+                <button class="btn btn-outline-light" type="submit">Déconnexion</button>
+            </form>
+        </div>
+    </div>
+</nav>
+<div class="container mt-5">
+    <h1 class="mb-4">Bienvenue sur le panneau d'administration</h1>
+    <p>Seuls les administrateurs peuvent voir cette page.</p>
+    <!-- Ajoutez ici des liens ou des widgets d'administration -->
+</div>
+</body>
+</html> 

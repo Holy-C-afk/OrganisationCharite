@@ -17,11 +17,14 @@ import java.math.BigDecimal;
 @RequestMapping("/donations")
 public class DonationController {
 
-    @Autowired
-    private DonationService donationService;
+    private final DonationService donationService;
+    private final UserService userService;
 
     @Autowired
-    private UserService userService;
+    public DonationController(DonationService donationService, UserService userService) {
+        this.donationService = donationService;
+        this.userService = userService;
+    }
 
     @GetMapping
     public String getDonationsPage(@AuthenticationPrincipal org.springframework.security.core.userdetails.User principal, Model model) {

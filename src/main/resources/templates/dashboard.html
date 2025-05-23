@@ -210,6 +210,11 @@
                             <i class="fas fa-hands-helping me-2"></i>Actions Caritatives
                         </a>
                     </li>
+                    <li class="nav-item" sec:authorize="hasRole('SUPER_ADMIN')">
+                        <a class="nav-link" th:href="@{/admin}">
+                            <i class="fas fa-user-shield me-2"></i>Admin Panel
+                        </a>
+                    </li>
                 </ul>
                 <div class="d-flex align-items-center">
                     <span class="username-display" th:text="${username}">

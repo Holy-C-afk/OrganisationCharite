@@ -14,13 +14,18 @@ public class CustomErrorController implements ErrorController {
 
     @RequestMapping("/error")
     public String handleError(HttpServletRequest request, Model model) {
-        Integer statusCode = (Integer) request.getAttribute("javax.servlet.error.status_code");
-        Exception exception = (Exception) request.getAttribute("javax.servlet.error.exception");
+        Integer statusCode = (Integer) request.getAttribute("jakarta.servlet.error.status_code");
+        Exception exception = (Exception) request.getAttribute("jakarta.servlet.error.exception");
+        String errorMessage = (String) request.getAttribute("jakarta.servlet.error.message");
         
-        logger.error("Error occurred: Status Code = {}, Exception = {}", statusCode, exception != null ? exception.getMessage() : "No exception");
+        logger.error("Error occurred: Status Code = {}, Exception = {}, Message = {}", 
+            statusCode, 
+            exception != null ? exception.getMessage() : "No exception",
+            errorMessage != null ? errorMessage : "No message");
         
         model.addAttribute("statusCode", statusCode);
-        model.addAttribute("errorMessage", exception != null ? exception.getMessage() : "Une erreur inattendue s'est produite");
+        model.addAttribute("errorMessage", errorMessage != null ? errorMessage : 
+            (exception != null ? exception.getMessage() : "Une erreur inattendue s'est produite"));
         
         return "error";
     }

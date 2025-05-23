@@ -11,6 +11,9 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -24,6 +27,13 @@ public class UserService {
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    public List<User> getRecentUsers(int limit) {
+        return userRepository.findAll().stream()
+            .sorted((u1, u2) -> u2.getCreatedAt().compareTo(u1.getCreatedAt()))
+            .limit(limit)
+            .collect(Collectors.toList());
     }
 
     public Optional<User> getUserById(Long id) {
@@ -87,5 +97,32 @@ public class UserService {
         User savedUser = userRepository.save(user);
         logger.info("User registered successfully with ID: {}", savedUser.getId());
         return savedUser;
+    }
+
+    public void updateUserRole(Long id, User.UserRole role) {
+        logger.info("Updating role for user ID: {} to role: {}", id, role);
+        userRepository.findById(id).ifPresent(user -> {
+            user.setRole(role);
+            userRepository.save(user);
+            logger.info("User role updated successfully");
+        });
+    }
+
+    public Map<String, Object> getUserStatistics() {
+        Map<String, Object> stats = new HashMap<>();
+        List<User> users = userRepository.findAll();
+        
+        stats.put("totalUsers", users.size());
+        stats.put("activeUsers", users.stream()
+            .filter(u -> u.getLastLogin() != null && 
+                u.getLastLogin().isAfter(LocalDateTime.now().minusDays(30)))
+            .count());
+        stats.put("usersByRole", users.stream()
+            .collect(Collectors.groupingBy(
+                User::getRole,
+                Collectors.counting()
+            )));
+        
+        return stats;
     }
 } 
