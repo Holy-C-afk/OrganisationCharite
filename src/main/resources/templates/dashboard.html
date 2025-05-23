@@ -210,11 +210,6 @@
                             <i class="fas fa-hands-helping me-2"></i>Actions Caritatives
                         </a>
                     </li>
-                    <li class="nav-item" sec:authorize="hasRole('SUPER_ADMIN')">
-                        <a class="nav-link" th:href="@{/admin}">
-                            <i class="fas fa-user-shield me-2"></i>Admin Panel
-                        </a>
-                    </li>
                 </ul>
                 <div class="d-flex align-items-center">
                     <span class="username-display" th:text="${username}">
@@ -292,7 +287,7 @@
                             <span>75 000 € collectés</span>
                             <span>Objectif: 100 000 €</span>
                         </div>
-                        <a href="#" class="btn btn-primary w-100">
+                        <a th:href="@{/donations}" class="btn btn-primary w-100">
                             <i class="fas fa-heart me-2"></i>Faire un don
                         </a>
                     </div>
@@ -313,7 +308,7 @@
                             <span>45 000 € collectés</span>
                             <span>Objectif: 100 000 €</span>
                         </div>
-                        <a href="#" class="btn btn-primary w-100">
+                        <a th:href="@{/donations}" class="btn btn-primary w-100">
                             <i class="fas fa-heart me-2"></i>Faire un don
                         </a>
                     </div>
@@ -334,7 +329,7 @@
                             <span>60 000 € collectés</span>
                             <span>Objectif: 100 000 €</span>
                         </div>
-                        <a href="#" class="btn btn-primary w-100">
+                        <a th:href="@{/donations}" class="btn btn-primary w-100">
                             <i class="fas fa-heart me-2"></i>Faire un don
                         </a>
                     </div>

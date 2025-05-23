@@ -1,172 +1,249 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tableau de bord administrateur - Charité</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Tableau de bord administrateur</title>
+    <style>
+        :root {
+            --primary-color: #2E7D32;
+            --secondary-color: #1B5E20;
+            --accent-color: #4CAF50;
+            --text-color: #333;
+            --light-bg: #f8f9fa;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .recent-activity {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .activity-item {
+            padding: 1rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .btn-admin {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-admin:hover {
+            background: var(--secondary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+    </style>
 </head>
 <body>
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <nav class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
-                <div class="position-sticky pt-3">
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link active text-white" href="/admin">
-                                <i class="fas fa-home"></i> Tableau de bord
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="/admin/users">
-                                <i class="fas fa-users"></i> Utilisateurs
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="/admin/organizations">
-                                <i class="fas fa-building"></i> Organisations
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="/admin/charity-actions">
-                                <i class="fas fa-hands-helping"></i> Actions caritatives
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="/admin/donations">
-                                <i class="fas fa-hand-holding-heart"></i> Dons
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="/admin/reports">
-                                <i class="fas fa-chart-bar"></i> Rapports
-                            </a>
-                        </li>
-                    </ul>
+    <div layout:fragment="content">
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Utilisateurs</h3>
+                <div class="value" th:text="${userStats.totalUsers}">0</div>
+                <div class="stat-details">
+                    <span th:text="${userStats.activeUsers} + ' actifs'">0 actifs</span>
+                    <span th:text="${userStats.newUsers} + ' nouveaux'">0 nouveaux</span>
                 </div>
-            </nav>
+            </div>
 
-            <!-- Main content -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">Tableau de bord</h1>
-                    <div class="btn-toolbar mb-2 mb-md-0">
-                        <div class="btn-group me-2">
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Exporter</button>
-                        </div>
-                    </div>
+            <div class="stat-card">
+                <h3>Organisations</h3>
+                <div class="value" th:text="${orgStats.totalOrganizations}">0</div>
+                <div class="stat-details">
+                    <span th:text="${orgStats.activeOrganizations} + ' actives'">0 actives</span>
+                    <span th:text="${orgStats.newOrganizations} + ' nouvelles'">0 nouvelles</span>
                 </div>
+            </div>
 
-                <!-- Statistics Cards -->
-                <div class="row">
-                    <div class="col-xl-3 col-md-6 mb-4">
-                        <div class="card border-left-primary shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                            Utilisateurs</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${userStats.totalUsers}">0</div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-users fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-xl-3 col-md-6 mb-4">
-                        <div class="card border-left-success shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                            Organisations</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${orgStats.totalOrganizations}">0</div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-building fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-xl-3 col-md-6 mb-4">
-                        <div class="card border-left-info shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                            Actions caritatives</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${actionStats.totalActions}">0</div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-hands-helping fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-xl-3 col-md-6 mb-4">
-                        <div class="card border-left-warning shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                            Dons totaux</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${donationStats.totalAmount}">0 €</div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-hand-holding-heart fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <div class="stat-card">
+                <h3>Actions caritatives</h3>
+                <div class="value" th:text="${actionStats.totalActions}">0</div>
+                <div class="stat-details">
+                    <span th:text="${actionStats.activeActions} + ' actives'">0 actives</span>
+                    <span th:text="${actionStats.completedActions} + ' terminées'">0 terminées</span>
                 </div>
+            </div>
 
-                <!-- Recent Activities -->
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card shadow mb-4">
-                            <div class="card-header py-3">
-                                <h6 class="m-0 font-weight-bold text-primary">Activités récentes</h6>
-                            </div>
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered" width="100%" cellspacing="0">
-                                        <thead>
-                                            <tr>
-                                                <th>Date</th>
-                                                <th>Utilisateur</th>
-                                                <th>Action</th>
-                                                <th>Détails</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr th:each="activity : ${recentActivities}">
-                                                <td th:text="${#temporals.format(activity.timestamp, 'dd/MM/yyyy HH:mm')}">Date</td>
-                                                <td th:text="${activity.user}">Utilisateur</td>
-                                                <td th:text="${activity.action}">Action</td>
-                                                <td th:text="${activity.details}">Détails</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <div class="stat-card">
+                <h3>Dons</h3>
+                <div class="value" th:text="${donationStats.totalAmount + ' €'}">0 €</div>
+                <div class="stat-details">
+                    <span th:text="${donationStats.totalDonations} + ' dons'">0 dons</span>
+                    <span th:text="${donationStats.averageAmount + ' € en moyenne'}">0 € en moyenne</span>
                 </div>
-            </main>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="recent-activity">
+            <h2>Activité récente</h2>
+            
+            <!-- Recent Users -->
+            <div class="activity-section">
+                <h3>Derniers utilisateurs</h3>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Email</th>
+                            <th>Date d'inscription</th>
+                            <th>Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="user : ${recentUsers}">
+                            <td th:text="${user.fullName}">John Doe</td>
+                            <td th:text="${user.email}">john@example.com</td>
+                            <td th:text="${#temporals.format(user.createdAt, 'dd/MM/yyyy')}">01/01/2024</td>
+                            <td>
+                                <span class="status-badge" th:classappend="${user.active ? 'active' : 'inactive'}"
+                                      th:text="${user.active ? 'Actif' : 'Inactif'}">Actif</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Recent Organizations -->
+            <div class="activity-section">
+                <h3>Dernières organisations</h3>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Type</th>
+                            <th>Date de création</th>
+                            <th>Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="org : ${recentOrganizations}">
+                            <td th:text="${org.name}">Organization Name</td>
+                            <td th:text="${org.type}">Type</td>
+                            <td th:text="${#temporals.format(org.createdAt, 'dd/MM/yyyy')}">01/01/2024</td>
+                            <td>
+                                <span class="status-badge" th:classappend="${org.active ? 'active' : 'inactive'}"
+                                      th:text="${org.active ? 'Active' : 'Inactive'}">Active</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Recent Charity Actions -->
+            <div class="activity-section">
+                <h3>Dernières actions caritatives</h3>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Titre</th>
+                            <th>Organisation</th>
+                            <th>Date de début</th>
+                            <th>Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="action : ${recentCharityActions}">
+                            <td th:text="${action.title}">Action Title</td>
+                            <td th:text="${action.organization.name}">Organization Name</td>
+                            <td th:text="${#temporals.format(action.startDate, 'dd/MM/yyyy')}">01/01/2024</td>
+                            <td>
+                                <span class="status-badge" th:classappend="${action.status.toLowerCase()}"
+                                      th:text="${action.status}">Status</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Recent Donations -->
+            <div class="activity-section">
+                <h3>Derniers dons</h3>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Donateur</th>
+                            <th>Action</th>
+                            <th>Montant</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="donation : ${recentDonations}">
+                            <td th:text="${donation.donor.fullName}">Donor Name</td>
+                            <td th:text="${donation.charityAction.title}">Action Title</td>
+                            <td th:text="${donation.amount + ' €'}">0 €</td>
+                            <td th:text="${#temporals.format(donation.createdAt, 'dd/MM/yyyy')}">01/01/2024</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h2>Actions rapides</h2>
+            <div class="actions-grid">
+                <a th:href="@{/admin/users/new}" class="btn btn-primary">
+                    <i class="fas fa-user-plus"></i>
+                    Nouvel utilisateur
+                </a>
+                <a th:href="@{/admin/organizations/new}" class="btn btn-primary">
+                    <i class="fas fa-building"></i>
+                    Nouvelle organisation
+                </a>
+                <a th:href="@{/admin/charity-actions/new}" class="btn btn-primary">
+                    <i class="fas fa-hands-helping"></i>
+                    Nouvelle action
+                </a>
+                <a th:href="@{/admin/reports}" class="btn btn-primary">
+                    <i class="fas fa-chart-bar"></i>
+                    Générer rapport
+                </a>
+            </div>
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 </html> 

@@ -30,59 +30,64 @@ public class SecurityConfig {
         logger.debug("Configuring security filter chain");
         
         http
-            .authorizeHttpRequests(auth -> {
-                logger.debug("Configuring authorization rules");
-                auth
-                    .requestMatchers("/", "/home", "/register", "/login", "/css/**", "/js/**", "/images/**", "/h2-console/**", "/api/public/**", "/error").permitAll()
-                    .requestMatchers("/admin/**").hasRole("SUPER_ADMIN")
-                    .requestMatchers("/organization/**").hasAnyRole("ORGANIZATION_ADMIN", "SUPER_ADMIN")
-                    .anyRequest().authenticated();
-            })
-            .formLogin(form -> {
-                logger.debug("Configuring form login");
-                form
-                    .loginPage("/login")
-                    .loginProcessingUrl("/login")
-                    .usernameParameter("email")
-                    .passwordParameter("password")
-                    .defaultSuccessUrl("/dashboard", true)
-                    .failureUrl("/login?error=true")
-                    .permitAll();
-            })
-            .logout(logout -> {
-                logger.debug("Configuring logout");
-                logout
-                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                    .logoutSuccessUrl("/")
-                    .invalidateHttpSession(true)
-                    .clearAuthentication(true)
-                    .deleteCookies("JSESSIONID")
-                    .permitAll();
-            })
-            .exceptionHandling(exception -> {
-                logger.debug("Configuring exception handling");
-                exception
-                    .accessDeniedPage("/error")
-                    .authenticationEntryPoint((request, response, authException) -> {
-                        logger.warn("Unauthorized access attempt to {}", request.getRequestURI());
-                        response.sendRedirect("/login");
-                    });
-            })
-            .csrf(csrf -> {
-                logger.debug("Configuring CSRF protection");
-                csrf
-                    .ignoringRequestMatchers("/h2-console/**", "/api/**")
-                    .requireCsrfProtectionMatcher(request -> {
-                        String method = request.getMethod();
-                        return !method.equals("GET") && !method.equals("HEAD") && !method.equals("TRACE") && !method.equals("OPTIONS");
-                    });
-            })
-            .headers(headers -> {
-                logger.debug("Configuring security headers");
-                headers
-                    .frameOptions().sameOrigin()
-                    .xssProtection();
-            });
+            .authorizeHttpRequests(authorize -> authorize
+                // Public resources
+                .requestMatchers(
+                    "/",
+                    "/css/**",
+                    "/js/**",
+                    "/images/**",
+                    "/favicon.ico",
+                    "/test.html"
+                ).permitAll()
+                
+                // Public pages
+                .requestMatchers(
+                    "/login",
+                    "/register",
+                    "/about",
+                    "/contact",
+                    "/charity-actions/**",
+                    "/organizations/**",
+                    "/donations",
+                    "/donations/**"
+                ).permitAll()
+                
+                // Admin pages
+                .requestMatchers(
+                    "/admin/**"
+                ).hasAuthority("ROLE_SUPER_ADMIN")
+                
+                // Organization admin pages
+                .requestMatchers(
+                    "/organization/**"
+                ).hasAuthority("ROLE_ORGANIZATION_ADMIN")
+                
+                // User pages
+                .requestMatchers(
+                    "/profile/**"
+                ).hasAuthority("ROLE_USER")
+                
+                // All other requests require authentication
+                .anyRequest().authenticated()
+            )
+            .formLogin(form -> form
+                .loginPage("/login")
+                .loginProcessingUrl("/login")
+                .usernameParameter("email")
+                .passwordParameter("password")
+                .defaultSuccessUrl("/dashboard", true)
+                .failureUrl("/login?error=true")
+                .permitAll()
+            )
+            .logout(logout -> logout
+                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                .logoutSuccessUrl("/")
+                .permitAll()
+            )
+            .csrf(csrf -> csrf
+                .ignoringRequestMatchers("/api/**")
+            );
 
         logger.debug("Security filter chain configuration completed");
         return http.build();

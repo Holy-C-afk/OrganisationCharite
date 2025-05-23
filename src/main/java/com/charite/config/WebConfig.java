@@ -47,6 +47,11 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // Configuration des ressources statiques
+        registry.addResourceHandler("/**")
+                .addResourceLocations("classpath:/static/");
+        
+        // Configuration du dossier d'upload
         Path uploadDir = Paths.get(System.getProperty("java.io.tmpdir"), "charity-actions");
         String uploadPath = uploadDir.toFile().getAbsolutePath();
         

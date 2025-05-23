@@ -151,4 +151,21 @@ public class CharityActionService {
         
         return stats;
     }
+
+    public void addParticipant(Long actionId, String fullName, String email, String phone, String availability, String message) {
+        logger.info("Adding participant to charity action ID: {}", actionId);
+        CharityAction action = charityActionRepository.findById(actionId)
+            .orElseThrow(() -> new RuntimeException("Action caritative non trouvée"));
+
+        // Vérifier si l'action est active ou à venir
+        if (action.getStatus() != CharityAction.ActionStatus.ACTIVE && 
+            action.getStatus() != CharityAction.ActionStatus.UPCOMING) {
+            throw new RuntimeException("Cette action n'accepte plus de participants");
+        }
+
+        // TODO: Implémenter la logique de stockage des participants
+        // Pour l'instant, on se contente de logger l'information
+        logger.info("Nouveau participant pour l'action {}: {} ({})", 
+            action.getTitle(), fullName, email);
+    }
 } 

@@ -78,4 +78,21 @@ public class CharityActionController {
             return "Failed to update status: " + e.getMessage();
         }
     }
+
+    @PostMapping("/{id}/participate")
+    public String participateInAction(@PathVariable Long id,
+                                    @RequestParam String fullName,
+                                    @RequestParam String email,
+                                    @RequestParam String phone,
+                                    @RequestParam String availability,
+                                    @RequestParam(required = false) String message,
+                                    RedirectAttributes redirectAttributes) {
+        try {
+            charityActionService.addParticipant(id, fullName, email, phone, availability, message);
+            redirectAttributes.addFlashAttribute("success", "Votre participation a été enregistrée avec succès !");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Erreur lors de l'enregistrement de votre participation : " + e.getMessage());
+        }
+        return "redirect:/charity-actions";
+    }
 } 

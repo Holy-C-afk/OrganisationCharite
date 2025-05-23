@@ -220,7 +220,7 @@
                                 <div class="col-md-4 text-end">
                                     <span class="badge bg-success">Active</span>
                                     <div class="mt-2">
-                                        <button class="btn btn-primary btn-sm">Participer</button>
+                                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" th:data-bs-target="'#participateModal-' + ${action.id}">Participer</button>
                                     </div>
                                 </div>
                             </div>
@@ -252,7 +252,7 @@
                                 <div class="col-md-4 text-end">
                                     <span class="badge bg-warning text-dark">À venir</span>
                                     <div class="mt-2">
-                                        <button class="btn btn-primary btn-sm">Participer</button>
+                                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" th:data-bs-target="'#participateModal-' + ${action.id}">Participer</button>
                                     </div>
                                 </div>
                             </div>
@@ -359,6 +359,95 @@
                         <div class="text-end">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
                             <button type="submit" class="btn btn-primary">Créer l'Action</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Participation Modal for each action -->
+    <div th:each="action : ${activeActions}" class="modal fade" th:id="'participateModal-' + ${action.id}" tabindex="-1" th:aria-labelledby="'participateModalLabel-' + ${action.id}" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" th:id="'participateModalLabel-' + ${action.id}">Participer à l'action</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form th:action="@{/charity-actions/{id}/participate(id=${action.id})}" method="post">
+                        <div class="mb-3">
+                            <label th:for="'fullName-' + ${action.id}" class="form-label">Nom complet</label>
+                            <input type="text" class="form-control" th:id="'fullName-' + ${action.id}" name="fullName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label th:for="'email-' + ${action.id}" class="form-label">Email</label>
+                            <input type="email" class="form-control" th:id="'email-' + ${action.id}" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label th:for="'phone-' + ${action.id}" class="form-label">Téléphone</label>
+                            <input type="tel" class="form-control" th:id="'phone-' + ${action.id}" name="phone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label th:for="'availability-' + ${action.id}" class="form-label">Disponibilité</label>
+                            <select class="form-select" th:id="'availability-' + ${action.id}" name="availability" required>
+                                <option value="">Sélectionnez votre disponibilité</option>
+                                <option value="MORNING">Matin</option>
+                                <option value="AFTERNOON">Après-midi</option>
+                                <option value="FULL_DAY">Journée complète</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label th:for="'message-' + ${action.id}" class="form-label">Message (Optionnel)</label>
+                            <textarea class="form-control" th:id="'message-' + ${action.id}" name="message" rows="3"></textarea>
+                        </div>
+                        <div class="text-end">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                            <button type="submit" class="btn btn-primary">Confirmer la participation</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:each="action : ${upcomingActions}" class="modal fade" th:id="'participateModal-' + ${action.id}" tabindex="-1" th:aria-labelledby="'participateModalLabel-' + ${action.id}" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" th:id="'participateModalLabel-' + ${action.id}">Participer à l'action</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form th:action="@{/charity-actions/{id}/participate(id=${action.id})}" method="post">
+                        <div class="mb-3">
+                            <label th:for="'fullName-' + ${action.id}" class="form-label">Nom complet</label>
+                            <input type="text" class="form-control" th:id="'fullName-' + ${action.id}" name="fullName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label th:for="'email-' + ${action.id}" class="form-label">Email</label>
+                            <input type="email" class="form-control" th:id="'email-' + ${action.id}" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label th:for="'phone-' + ${action.id}" class="form-label">Téléphone</label>
+                            <input type="tel" class="form-control" th:id="'phone-' + ${action.id}" name="phone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label th:for="'availability-' + ${action.id}" class="form-label">Disponibilité</label>
+                            <select class="form-select" th:id="'availability-' + ${action.id}" name="availability" required>
+                                <option value="">Sélectionnez votre disponibilité</option>
+                                <option value="MORNING">Matin</option>
+                                <option value="AFTERNOON">Après-midi</option>
+                                <option value="FULL_DAY">Journée complète</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label th:for="'message-' + ${action.id}" class="form-label">Message (Optionnel)</label>
+                            <textarea class="form-control" th:id="'message-' + ${action.id}" name="message" rows="3"></textarea>
+                        </div>
+                        <div class="text-end">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                            <button type="submit" class="btn btn-primary">Confirmer la participation</button>
                         </div>
                     </form>
                 </div>
